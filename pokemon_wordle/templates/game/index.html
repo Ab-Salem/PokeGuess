@@ -1,6 +1,8 @@
 <!-- templates/game/index.html - Updated with Start Screen -->
 {% extends 'game/base.html' %}
 
+{% load static %} 
+
 {% block content %}
 <!-- Start Screen (Wordle Style) -->
 <div id="start-screen" class="start-screen">
@@ -336,6 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const startScreen = document.getElementById('start-screen');
     const gameScreen = document.getElementById('game-screen');
     const startBtn = document.getElementById('start-game-btn');
+    const playAgainBtn = document.getElementById('play-again-btn');
     
     // Start game function
     function startGame() {
@@ -360,6 +363,13 @@ document.addEventListener('DOMContentLoaded', () => {
             startGame();
         }
     });
+
+    // 🔁 Force page refresh when "Play Again" is clicked
+    if (playAgainBtn) {
+        playAgainBtn.addEventListener('click', () => {
+            window.location.reload();  // full reload
+        });
+    }
 });
 </script>
 {% endblock %}
