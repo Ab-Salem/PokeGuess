@@ -1,0 +1,365 @@
+<!-- templates/game/index.html - Updated with Start Screen -->
+{% extends 'game/base.html' %}
+
+{% block content %}
+<!-- Start Screen (Wordle Style) -->
+<div id="start-screen" class="start-screen">
+    <div class="start-container">
+        <div class="logo-container">
+            <img src="{% static 'images/logo.png' %}" alt="Pokémon Wordle" class="game-logo">
+        </div>
+        
+        <div class="start-content">
+            <h1 class="start-title">Pokémon Wordle</h1>
+            <p class="start-subtitle">Guess the Generation I Pokémon</p>
+            
+            <div class="start-instructions">
+                <div class="instruction-item">
+                    <span class="instruction-number">6</span>
+                    <span class="instruction-text">guesses to find the mystery Pokémon</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="instruction-number">10</span>
+                    <span class="instruction-text">categories to help narrow it down</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="instruction-number">151</span>
+                    <span class="instruction-text">Generation I Pokémon to choose from</span>
+                </div>
+            </div>
+            
+            <button id="start-game-btn" class="btn btn-start">
+                <span class="btn-text">Start Game</span>
+                <span class="btn-icon">▶</span>
+            </button>
+        </div>
+        
+        <div class="start-footer">
+            <p>Inspired by Wordle • Made for Pokémon fans</p>
+        </div>
+    </div>
+</div>
+
+<!-- Main Game (Hidden Initially) -->
+<div id="game-screen" class="game-container" style="display: none;">
+    <header class="game-header">
+        <h1 class="game-title">Pokémon Wordle</h1>
+        <p class="generation-title">Generation I Challenge</p>
+        <button id="new-game-btn" class="btn btn-secondary">New Game</button>
+    </header>
+
+    <div class="game-instructions">
+        <p>Guess the mystery Pokémon in 6 tries. Each guess reveals how close you are!</p>
+        <div class="legend">
+            <span class="legend-item">
+                <span class="status-box correct"></span>
+                Correct
+            </span>
+            <span class="legend-item">
+                <span class="status-box incorrect"></span>
+                Wrong
+            </span>
+            <span class="legend-item">
+                <span class="status-box low"></span>
+                Too Low
+            </span>
+            <span class="legend-item">
+                <span class="status-box high"></span>
+                Too High
+            </span>
+        </div>
+    </div>
+
+    <div class="input-section">
+        <div class="input-container">
+            <input type="text" id="pokemon-input" placeholder="Type a Pokémon name..." autocomplete="off">
+            <button id="guess-btn" class="btn btn-primary">Guess</button>
+        </div>
+        <div id="autocomplete" class="autocomplete-dropdown"></div>
+        <div id="guesses-remaining" class="guesses-counter">6 guesses remaining</div>
+    </div>
+
+    <div class="results-container">
+        <div class="results-header">
+            <div class="header-cell header-pokemon">Pokémon</div>
+            <div class="header-cell">Number</div>
+            <div class="header-cell">Type 1</div>
+            <div class="header-cell">Type 2</div>
+            <div class="header-cell">Height</div>
+            <div class="header-cell">Weight</div>
+            <div class="header-cell">BST</div>
+            <div class="header-cell">Legendary</div>
+            <div class="header-cell">Color</div>
+            <div class="header-cell">Habitat</div>
+        </div>
+        <div id="results-grid" class="results-grid"></div>
+    </div>
+
+    <div id="game-over-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="game-over-title">Game Over!</h2>
+            <div id="game-over-message"></div>
+            <button id="play-again-btn" class="btn btn-primary">Play Again</button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Start Screen Styles */
+.start-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.start-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    padding: 60px 40px;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.logo-container {
+    margin-bottom: 40px;
+}
+
+.game-logo {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.game-logo:hover {
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.start-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 12px;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    letter-spacing: -1px;
+}
+
+.start-subtitle {
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 40px;
+    font-weight: 300;
+}
+
+.start-instructions {
+    margin-bottom: 50px;
+}
+
+.instruction-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.instruction-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.instruction-number {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    flex-shrink: 0;
+}
+
+.instruction-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    font-size: 1.1rem;
+    text-align: left;
+    flex: 1;
+}
+
+.btn-start {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    font-size: 1.3rem;
+    padding: 20px 50px;
+    border-radius: 16px;
+    border: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 0 auto;
+    min-width: 200px;
+    justify-content: center;
+}
+
+.btn-start:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(16, 185, 129, 0.5);
+    background: linear-gradient(135deg, #059669, #047857);
+}
+
+.btn-start:active {
+    transform: translateY(-1px);
+}
+
+.btn-text {
+    font-family: inherit;
+}
+
+.btn-icon {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-start:hover .btn-icon {
+    transform: translateX(3px);
+}
+
+.start-footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.start-footer p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+
+/* Animation for screen transition */
+.fade-out {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.5s ease;
+}
+
+.fade-in {
+    opacity: 1;
+    transform: scale(1);
+    transition: all 0.5s ease;
+}
+
+/* Responsive design for start screen */
+@media (max-width: 768px) {
+    .start-container {
+        padding: 40px 30px;
+        margin: 20px;
+    }
+    
+    .game-logo {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .start-title {
+        font-size: 2.5rem;
+    }
+    
+    .start-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .instruction-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .instruction-text {
+        text-align: center;
+    }
+    
+    .btn-start {
+        padding: 18px 40px;
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .start-container {
+        padding: 30px 20px;
+    }
+    
+    .game-logo {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .start-title {
+        font-size: 2rem;
+    }
+}
+</style>
+
+<script>
+// Add this to your existing game.js or include it inline
+document.addEventListener('DOMContentLoaded', () => {
+    const startScreen = document.getElementById('start-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const startBtn = document.getElementById('start-game-btn');
+    
+    // Start game function
+    function startGame() {
+        startScreen.classList.add('fade-out');
+        
+        setTimeout(() => {
+            startScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+            gameScreen.classList.add('fade-in');
+            
+            // Initialize the main game
+            new PokemonWordle();
+        }, 500);
+    }
+    
+    // Event listeners
+    startBtn.addEventListener('click', startGame);
+    
+    // Allow Enter key to start game
+    document.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && startScreen.style.display !== 'none') {
+            startGame();
+        }
+    });
+});
+</script>
+{% endblock %}
