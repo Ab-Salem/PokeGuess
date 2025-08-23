@@ -299,5 +299,3 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 This is a fan project for educational purposes. Pokémon is a trademark of Nintendo/Game Freak/Creatures Inc.
 
 ---
-
-Enjoy your Pokémon Wordle game! 🎮✨
