@@ -11,7 +11,6 @@ class PokemonWordle {
         
         this.initializeElements();
         this.loadPokemonList();
-        // Don't load game state immediately - wait for start button
     }
     
     initializeElements() {
@@ -27,13 +26,11 @@ class PokemonWordle {
         this.playAgainBtn = document.getElementById('play-again-btn');
     }
     
-    // Initialize the game (called after start screen)
     initialize() {
         this.loadGameState();
         this.setupEventListeners();
         this.gameStarted = true;
         
-        // Focus the input for immediate play
         setTimeout(() => {
             if (this.pokemonInput) {
                 this.pokemonInput.focus();
@@ -100,7 +97,6 @@ class PokemonWordle {
             this.startNewGame();
         });
         
-        // Click outside modal to close
         this.modal.addEventListener('click', (e) => {
             if (e.target === this.modal) {
                 this.hideModal();
@@ -158,7 +154,6 @@ class PokemonWordle {
             const item = document.createElement('div');
             item.className = 'autocomplete-item';
             
-            // Find Pokemon data for images
             const pokemonInfo = this.pokemonData.find(p => p.name === pokemon);
             
             if (pokemonInfo && pokemonInfo.sprite_url) {
@@ -445,7 +440,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (!startScreen || !gameScreen || !startBtn) {
         // Fallback: if no start screen, initialize game directly
-        new PokemonWordle().initialize();
+        const game = new PokemonWordle();
+        game.initialize();
         return;
     }
     
@@ -457,15 +453,13 @@ document.addEventListener('DOMContentLoaded', () => {
             gameScreen.style.display = 'block';
             gameScreen.classList.add('fade-in');
             
-            // Initialize the main game
             const game = new PokemonWordle();
             game.initialize();
-        }, 500);
+        }, 400);
     }
     
     startBtn.addEventListener('click', startGame);
     
-    // Allow Enter key to start game
     document.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && startScreen.style.display !== 'none') {
             startGame();
