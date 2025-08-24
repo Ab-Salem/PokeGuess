@@ -581,10 +581,10 @@ body {
 .comic-flair {
     position: absolute;
     top: 15px;
-    right: 15px;
+    right: 550px;
     z-index: 1000;
     animation: bounce 2s infinite;
-    transform: rotate(-10deg); /* more tilted comic look */
+    transform: rotate(90deg); /* more tilted comic look */
 }
 
 .comic-bubble {
@@ -594,35 +594,7 @@ body {
     border-radius: 20px;
     padding: 14px 20px;
     box-shadow: 0 4px 12px rgba(255, 0, 0, 0.4);
-    transform: rotate(-5deg);
-}
-
-
-/* Spiky edges for comic effect */
-.comic-bubble::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 15px;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid #FF0000;
     transform: rotate(15deg);
-}
-
-.comic-bubble::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    right: 20px;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 8px solid #FF0000;
-    transform: rotate(-25deg);
 }
 
 .comic-text {

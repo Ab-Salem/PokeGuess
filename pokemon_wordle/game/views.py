@@ -38,6 +38,7 @@ def index(request):
     """Main game page"""
     return render(request, 'game/index.html')
 
+@csrf_exempt
 def new_game(request):
     """Start a new game"""
     if not request.session.session_key:

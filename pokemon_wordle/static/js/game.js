@@ -1,4 +1,4 @@
-// static/js/game.js - Updated with Start Screen Support
+// static/js/game.js - Updated with CSRF Support
 
 class PokemonWordle {
     constructor() {
@@ -11,6 +11,28 @@ class PokemonWordle {
         
         this.initializeElements();
         this.loadPokemonList();
+        this.setupCSRF();
+    }
+    
+    setupCSRF() {
+        // Get CSRF token from Django
+        this.csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                        this.getCookie('csrftoken');
+    }
+    
+    getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
     }
     
     initializeElements() {
@@ -227,6 +249,7 @@ class PokemonWordle {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRFToken': this.csrfToken,
                 },
                 body: JSON.stringify({ pokemon_name: pokemonName })
             });
@@ -411,6 +434,7 @@ class PokemonWordle {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRFToken': this.csrfToken,
                 }
             });
             
