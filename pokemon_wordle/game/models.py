@@ -1,4 +1,3 @@
-# game/models.py
 from django.db import models
 from django.contrib.auth.models import User
 import random
@@ -16,7 +15,7 @@ class Pokemon(models.Model):
     color = models.CharField(max_length=50)
     habitat = models.CharField(max_length=50, blank=True, null=True)
     
-    # NEW: Image URL fields for live web fetching
+    # Image URL fields for live web fetching
     image_url = models.URLField(max_length=500, blank=True, null=True, help_text="Official artwork URL")
     sprite_url = models.URLField(max_length=500, blank=True, null=True, help_text="Game sprite URL")
     

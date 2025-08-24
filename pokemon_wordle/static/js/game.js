@@ -1,5 +1,3 @@
-// static/js/game.js - Updated with CSRF Support
-
 class PokemonWordle {
     constructor() {
         this.pokemonList = [];
@@ -15,7 +13,6 @@ class PokemonWordle {
     }
     
     setupCSRF() {
-        // Get CSRF token from Django
         this.csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
                         this.getCookie('csrftoken');
     }
