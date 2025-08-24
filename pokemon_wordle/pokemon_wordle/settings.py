@@ -5,15 +5,14 @@ Django settings for pokemon_wordle project.
 from pathlib import Path
 import os
 import dj_database_url
+from decouple import config 
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # secret key 
-SECRET_KEY = os.environ.get('SECRET_KEY', 'cvxz0rqd$%4e88(5_w^*=c!8ou*z=^%4d8(sxp5+0edd6dsx-=')
-
-# don't run with debug turned on in production
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+SECRET_KEY = config('SECRET_KEY')
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['*']  
 
@@ -104,6 +103,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Security settings for production
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = False
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
