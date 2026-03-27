@@ -1,148 +1,281 @@
-# Pokémon Wordle 🎮
+# PokeGuess
 
-A full-stack Django web game that combines the addictive gameplay of Wordle with the nostalgia of Generation 1 Pokémon. Guess the mystery Pokémon in 6 attempts using strategic deduction across 10 different categories!
+A full-stack Django web game combining Wordle-style deduction with Generation 1 Pokémon. Players have 6 attempts to identify the mystery Pokémon using color-coded feedback across 10 comparison categories.
 
-[![Live Demo](https://img.shields.io/badge/Live-WebApp-brightgreen)](https://https://abdallahsalem.up.railway.app/)
-[![Django](https://img.shields.io/badge/Django-4.2.7-green)](https://djangoproject.com/)
-[![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://python.org/)
+**Live demo:** [abdallahsalem.up.railway.app](https://abdallahsalem.up.railway.app/)
 
-URL: https://abdallahsalem.up.railway.app/
+---
 
-## 🛠️ Technology Stack
+## Table of Contents
 
-- **Backend**: Django 4.2.7 with Python 3.11+
-- **Frontend**: Vanilla JavaScript with modern CSS
-- **Database**: SQLite (development) / PostgreSQL (production)
-- **Deployment**: Railway
-- **Static Files**: WhiteNoise
-- **Data Source**: Custom dataset with all 151 Generation 1 Pokémon
+- [How It Works](#how-it-works)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [API Reference](#api-reference)
+- [Feedback System](#feedback-system)
+- [Project Structure](#project-structure)
+- [Credits](#credits)
 
-## 🎯 Features
+---
 
-### Core Gameplay
-- **Wordle-style mechanics** with 6 guesses to find the mystery Pokémon
-- **10 comparison categories**: Name, Number, Types, Height, Weight, Base Stats, Legendary status, Color, and Habitat
-- **Color-coded feedback system**:
-  - 🟢 **Correct** - Exact match
-  - 🔴 **Incorrect** - Wrong value
-  - 🟠 **Too Low** - Your guess is lower than the target
-  - 🔵 **Too High** - Your guess is higher than the target
- 
+## How It Works
 
-### User Experience
-- **Beautiful Pokémon images** displayed with each guess
-- **Autocomplete search** with keyboard navigation and Pokémon sprites
-- **Clean, modern UI** inspired by Pokemon.com's design
-- **Session-based games** - no registration required
-- **Game state persistence** - resume if you refresh the page
-- **Mobile-responsive** design that works on all devices
+Each game session selects a random Generation 1 Pokémon as the target. The player types a Pokémon name into an autocomplete search field — with sprite previews — and submits a guess. The game returns a row of color-coded results across 10 categories, indicating how closely the guess matches the target. The session persists across page refreshes, so players can resume an in-progress game.
 
+- **Guesses allowed:** 6
+- **Pokémon pool:** All 151 Generation 1 Pokémon
+- **Registration required:** None — sessions are anonymous
 
-## 📁 Project Structure
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Backend | Django 4.2.7, Python 3.11+ |
+| Frontend | Vanilla JavaScript, CSS3 |
+| Database | SQLite (development), PostgreSQL (production) |
+| Deployment | Railway |
+| Static files | WhiteNoise |
+| Data source | Custom dataset, PokéAPI |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.11+
+- pip
+- Git
+
+### Installation
+
+**1. Clone the repository**
+
+```bash
+git clone https://github.com/Ab-Salem/PokeGuess.git
+cd PokeGuess/pokemon_wordle
+```
+
+**2. Install dependencies**
+
+```bash
+pip install -r requirements.txt
+```
+
+**3. Configure environment variables**
+
+Create a `.env` file in the project root:
+
+```
+SECRET_KEY=your-secret-key-here
+DEBUG=True
+```
+
+**4. Initialize the database**
+
+```bash
+python manage.py migrate
+python manage.py load_gen1_pokemon
+```
+
+The `load_gen1_pokemon` management command populates the database with all 151 Generation 1 Pokémon, including stats, types, height, weight, color, habitat, and sprite URLs sourced from PokéAPI.
+
+**5. Start the development server**
+
+```bash
+python manage.py runserver
+```
+
+Visit `http://127.0.0.1:8000/` in your browser.
+
+---
+
+## API Reference
+
+PokeGuess exposes a lightweight internal REST API consumed by the frontend JavaScript client. All endpoints require an active session cookie, which Django sets automatically on first page load.
+
+### Base URL
+
+```
+http://localhost:8000/api
+```
+
+---
+
+### GET /api/pokemon/search
+
+Returns a list of Pokémon whose names match the search query. Used to populate the autocomplete field.
+
+**Query parameters**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `q` | string | Yes | Partial or full Pokémon name |
+
+**Example request**
+
+```
+GET /api/pokemon/search?q=char
+```
+
+**Response – 200 OK**
+
+```json
+[
+  {
+    "id": 4,
+    "name": "Charmander",
+    "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png"
+  },
+  {
+    "id": 5,
+    "name": "Charmeleon",
+    "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/5.png"
+  },
+  {
+    "id": 6,
+    "name": "Charizard",
+    "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png"
+  }
+]
+```
+
+---
+
+### POST /api/guess
+
+Submits a guess and returns comparison feedback for all 10 categories.
+
+**Request body**
+
+```json
+{
+  "pokemon_name": "Charmander"
+}
+```
+
+**Response – 200 OK**
+
+```json
+{
+  "guess": {
+    "name": "Charmander",
+    "number": 4,
+    "type1": "Fire",
+    "type2": null,
+    "height": 0.6,
+    "weight": 8.5,
+    "base_stat_total": 309,
+    "legendary": false,
+    "color": "Red",
+    "habitat": "Mountain"
+  },
+  "feedback": {
+    "name": "incorrect",
+    "number": "too_low",
+    "type1": "incorrect",
+    "type2": "correct",
+    "height": "too_low",
+    "weight": "too_low",
+    "base_stat_total": "too_low",
+    "legendary": "correct",
+    "color": "incorrect",
+    "habitat": "incorrect"
+  },
+  "guesses_remaining": 4,
+  "game_over": false,
+  "won": false
+}
+```
+
+**Response – 200 OK (game won)**
+
+```json
+{
+  "feedback": { ... },
+  "guesses_remaining": 2,
+  "game_over": true,
+  "won": true,
+  "target_pokemon": "Charizard"
+}
+```
+
+**Response – 400 Bad Request**
+
+```json
+{
+  "error": "Pokémon not found"
+}
+```
+
+---
+
+### GET /api/game/state
+
+Returns the current game state for the active session. Used to restore an in-progress game on page refresh.
+
+**Response – 200 OK**
+
+```json
+{
+  "guesses_made": 2,
+  "guesses_remaining": 4,
+  "game_over": false,
+  "won": false,
+  "guess_history": [ ... ]
+}
+```
+
+---
+
+## Feedback System
+
+Each guess returns a `feedback` object with one of four result values per category:
+
+| Value | Meaning | Indicator |
+|-------|---------|-----------|
+| `correct` | Exact match | Green |
+| `incorrect` | Wrong value | Red |
+| `too_low` | Guessed value is lower than the target | Orange |
+| `too_high` | Guessed value is higher than the target | Blue |
+
+Directional feedback (`too_low` / `too_high`) applies to numeric categories: Number, Height, Weight, and Base Stat Total. All other categories return `correct` or `incorrect` only.
+
+---
+
+## Project Structure
 
 ```
 pokemon_wordle/
 ├── manage.py
 ├── requirements.txt
-├── .env.example
-├── Procfile
-├── railway.json
+├── Procfile                        # Railway process config
 ├── pokemon_wordle/
 │   ├── settings.py
 │   ├── urls.py
 │   └── wsgi.py
 ├── game/
-│   ├── models.py          # Pokemon, GameSession, Guess models
-│   ├── views.py           # Game logic and API endpoints
-│   ├── urls.py           # URL routing
-│   ├── admin.py          # Django admin configuration
+│   ├── models.py                   # Pokemon, GameSession, Guess models
+│   ├── views.py                    # Game logic and API endpoints
+│   ├── urls.py                     # URL routing
 │   └── management/
 │       └── commands/
-│           └── load_gen1_pokemon.py  # Data loading script
+│           └── load_gen1_pokemon.py  # PokéAPI data loading script
 ├── templates/
 │   └── game/
-│       ├── base.html     # Base template
-│       └── index.html    # Main game interface
+│       ├── base.html
+│       └── index.html              # Main game interface
 └── static/
-    ├── css/
-    │   └── style.css     # Pokemon.com inspired styling
-    ├── js/
-    │   └── game.js       # Game logic and interactions
-    └── images/
-        ├── logo.png      # Your custom logo
-        └── background.png # Header background image
+    ├── css/style.css
+    └── js/game.js                  # Client-side game logic
 ```
 
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Python 3.11+
-- Django 4.2.7
-- Git
-
-### Local Development
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Ab-Salem/PokeGuess.git
-   cd PokeGuess
-   ```
-
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Set up environment variables**
-   Create a `.env` file in the project root:
-   ```env
-   SECRET_KEY=your-secret-key-here
-   DEBUG=True
-   ```
-
-4. **Set up the database**
-   ```bash
-   python manage.py migrate
-   python manage.py load_gen1_pokemon
-   ```
-
-5. **Run the development server**
-   ```bash
-   python manage.py runserver
-   ```
-
-6. **Open your browser**
-   Visit `http://127.0.0.1:8000/`
-
-## 🤝 Contributing
-
-Contributions are welcome! Here are some ideas that I am planning:
-
-- **Implement daily challenges** with a Pokémon of the day
-- **Add difficulty modes** (fewer categories for easy mode)
-- **Multiplayer mode** (race against friends)
-
-### Development Setup
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes and test thoroughly
-4. Submit a pull request with a clear description
-
-
-## 🎮 Credits
-
-- **Created by**: Abdallah Salem
-- **Inspired by**: Wordle by Josh Wardle
-- **Pokémon Data**: [PokéAPI](https://pokeapi.co/)
-- **Pokémon**: © Nintendo/Game Freak/Creatures Inc.
-
-## 📄 License
-
-This project is for educational purposes only. Pokémon is a trademark of Nintendo/Game Freak/Creatures Inc. This is a fan-made project and is not affiliated with or endorsed by Nintendo.
-
-## 🐛 Issues & Support
-
-Found a bug or have a feature request? Please [open an issue](https://github.com/Ab-Salem/pokeguess/issues) on GitHub.
-
 ---
+
+## Credits
+
+- Game concept inspired by [Wordle](https://www.nytimes.com/games/wordle/index.html) by Josh Wardle
+- Pokémon data from [PokéAPI](https://pokeapi.co/)
+- Pokémon is a trademark of Nintendo / Game Freak / Creatures Inc. This is a fan-made educational project.
